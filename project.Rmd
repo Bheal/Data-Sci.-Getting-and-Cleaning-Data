@@ -1,0 +1,277 @@
+---
+title: "Week 4 Project"
+author: "Bhael"
+date: "December 6, 2016"
+output: html_document
+---
+```{r}
+getwd()
+```
+
+```{r}
+setwd("C:/Users/avtarsingh/Downloads")
+```
+This is my default working directory in R.
+
+```{r}
+
+if(!file.exists("./data/c3w4")){dir.create("./data/c3w4")}
+url341 <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
+
+
+download.file(url341, destfile = "./data/c3w4/pr341.zip")
+
+```
+
+So the file download, NOTE: *DIDN'T USE EITHER method or mode ARGUMENTS.
+
+Now unzip the file
+```{r}
+unzip("./data/c3w4/pr341.zip", exdir="./data/c3w4")
+
+# See the unlisted files.
+list.files("./data/c3w4")
+
+```
+
+--- Begin working on the downloaded data from here on.
+A directory 'UCI HAR Dataset' is the unzip's byproduct.
+We will set that dir as our working directory.
+```{r}
+
+setwd("./data/c3w4/UCI HAR Dataset")
+list.files()
+list.dirs()
+### 
+#   So we get an idea of what all was unziped.  *Of interest is dir(s) test and train.
+
+list.files("./test")
+list.files("./train")
+
+# list.files("./test/Inertial Signals")
+# list.files("./train/Inertial Signals")
+```
+-  Three '.txt' files in each of the test and train dir(s) in the working dir.
+- And four '.txt' files in the working dir, explored here:
+```{r}
+setwd("./data/c3w4/UCI HAR Dataset")
+
+readLines("README.txt")
+# REadme file.
+
+readLines("activity_labels.txt")
+# numeric labels corresponding to 'six activities (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) ' by each participant while wearing a smartphone (Samsung Galaxy S II) on the waist.
+
+readLines("features_info.txt")
+# A read me file that gives us this info for the feature.text file: "The complete list of variables of each feature vector is available in 'features.txt'".
+
+readLines("features.txt")
+# names 561 of variables.
+
+```
+
+
+
+--- *FIRST PART OF THE PROJECT:
+1) Merges the training and the test sets to create one data set. 
+
+- From the readme file: The obtained dataset has been randomly partitioned into two sets, where 70% of the volunteers was selected for generating the training data and 30% the test data.
+-
+
+--- Since each train and test are identical and need coersing, I will first get all the columns for the test set combined.
+
+```{r}
+setwd("./data/c3w4/UCI HAR Dataset")
+
+x_test <- (read.table("./test/X_test.txt", header=F))
+dim(x_test)
+# The 561 columns will correspond to the 561 enteries of the 'features.txt' file
+
+subject_test <- (read.table("./test/subject_test.txt", header=F))
+dim(subject_test)
+summary(subject_test)
+unique(subject_test[1])
+#
+
+y_test <- (read.table("./test/y_test.txt", header=F))
+dim(y_test)
+summary(y_test)
+
+
+```
+
+From the Readme files and initial exploraton of the files we can judge that:
+
+          (i) the values in the y_test correspond to: 1-Walking, 2-Walking_upstairs, 3-Walking_downstairs, 4-Sitting, 5-Standing, 6-Laying, as listed in 'activity_labels.txt' file.
+      
+          (ii) The 561 columns of x_test correspond to the variable listed in 'features.txt'
+   
+```{r}
+setwd("./data/c3w4/UCI HAR Dataset")
+
+# From 'activity_labels.txt' we can get the names of value labeles in y_text.
+labels <- readLines("activity_labels.txt")
+# I will use these to label the rows for the activity names later.
+
+# 
+fea_var <- readLines("features.txt")
+# These are names of the columns in the x_test dataset, the names are now stored in a character vector, fea_var.
+```
+
+#  *First compile test set*, complete with labels (y_test) with their activitiy names extracted from the "activity_labels.txt" file; variable names for all the columns in the (X_test) file extracted from the "features.txt" file; and the also merge the "subject_test" file with (y_test) and (X_test) to complete the test set.  This last one is the id for the subject (1-30) who's activity is recorded in tht row.
+
+```{r}
+head(fea_var)
+tail(fea_var)
+
+```
+
+I want to remove all the numbers preceding the name in the 'fea_var' variable to make the names shorter when they are assigned to columns of 'x_test'.
+```{r}
+fea_var <- (gsub("([0-9]* )","",fea_var, fixed = FALSE));
+names(x_test) <- fea_var
+
+x_test <- x_test[,grep("(*mean*)|(*std*)",fea_var, ignore.case = TRUE)]
+```
+
+  -  # Objective 2.Now x_test only has mean and std measurements.
+  - I did not remove the columns that had meanFreq() measurement in frequency domain signals.  i.e. fBodyAcc has -mean(), and other column for -meanFreq() measurement.
+  
+```{r}
+head(y_test)
+head(subject_test)
+
+table(y_test)
+
+names(y_test)
+y_test <- (mapvalues(y_test$V1, substring(labels,1,1), substring(labels,3)))
+
+table(y_test)
+
+```
+        
+  -  #Objective 3. Above Values in y_test are replaced with descriptive activity names.
+  
+Next use rbind to combine the three: 'subject_test', 'y_test', and 'x_test'.
+```{r}
+com_test <-(cbind(subject_test,y_test,x_test))
+
+names(com_test)[1:2] <- c("Subject", "Activity")
+
+```
+*## This is the complete test set.  It has mean and standard deviation measurements, And it has descriptive names for variables and activities.
+  - Note: For now I have left the columns with "meanFreq" in the dataset.
+  
+#   *Repeat the steps for the train dataset, to compile a com_train dataset.*
+
+```{r}
+getwd()
+setwd("./data/c3w4/UCI HAR Dataset")
+
+x_train <- (read.table("./train/X_train.txt", header=F))
+dim(x_test)
+# The 561 columns will correspond to the 561 enteries of the 'features.txt' file
+
+subject_train <- (read.table("./train/subject_train.txt", header=F))
+dim(subject_train)
+summary(subject_train)
+unique(subject_train[1])
+#
+
+y_train <- (read.table("./train/y_train.txt", header=F))
+dim(y_train)
+summary(y_train)
+
+
+```
+* change*
+From the Readme files and initial exploraton of the files we can judge that:
+
+          (i) the values in the y_test correspond to: 1-Walking, 2-Walking_upstairs, 3-Walking_downstairs, 4-Sitting, 5-Standing, 6-Laying, as listed in 'activity_labels.txt' file.
+      
+          (ii) The 561 columns of x_test correspond to the variable listed in 'features.txt'
+   
+```{r}
+setwd("./data/c3w4/UCI HAR Dataset")
+
+# From 'activity_labels.txt' we can get the names of value labeles in y_text.
+labels <- readLines("activity_labels.txt")
+# I will use these to label the rows for the activity names later.
+
+# 
+fea_var <- readLines("features.txt")
+# These are names of the columns in the x_test dataset, the names are now stored in a character vector, fea_var.
+```
+
+#  *Now compile train set*, complete with labels (y_test) with their activitiy names extracted from the "activity_labels.txt" file; variable names for all the columns in the (X_test) file extracted from the "features.txt" file; and the also merge the "subject_test" file with (y_test) and (X_test) to complete the test set.  This last one is the id for the subject (1-30) who's activity is recorded in tht row.
+
+```{r}
+head(fea_var)
+tail(fea_var)
+
+```
+
+I want to remove all the numbers preceding the name in the 'fea_var' variable to make the names shorter when they are assigned to columns of 'x_test'.
+```{r}
+fea_var <- (gsub("([0-9]* )","",fea_var, fixed = FALSE));
+names(x_train) <- fea_var
+
+x_train <- x_train[,grep("(*mean*)|(*std*)",fea_var, ignore.case = TRUE)]
+```
+
+  -  # Objective 2.Now x_test only has mean and std measurements.
+  - I did not remove the columns that had meanFreq() measurement in frequency domain signals.  i.e. fBodyAcc has -mean(), and other column for -meanFreq() measurement.
+  
+```{r}
+head(y_test)
+head(subject_test)
+
+table(y_test)
+
+names(y_test)
+y_train <- (mapvalues(y_train$V1, substring(labels,1,1), substring(labels,3)))
+
+table(y_train)
+
+```
+        
+  -  #Objective 3. Above Values in y_test are replaced with descriptive activity names.
+  
+Next use rbind to combine the three: 'subject_test', 'y_test', and 'x_test'.
+```{r}
+com_train <-(cbind(subject_test,y_test,x_test))
+
+names(com_train)[1:2] <- c("Subject", "Activity")
+
+```
+
+  
+--- Now merge the two, test_com and train_com.  (I can delete the columns with 'meanFreq' measuremets).
+```{r}
+com <-rbind(com_test,com_train)
+dim(com)
+```
+
+
+---------
+
+
+tBodyAcc-XYZ
+tGravityAcc-XYZ
+tBodyAccJerk-XYZ
+tBodyGyro-XYZ
+tBodyGyroJerk-XYZ
+tBodyAccMag
+tGravityAccMag
+tBodyAccJerkMag
+tBodyGyroMag
+tBodyGyroJerkMag
+
+fBodyAcc-XYZ
+fBodyAccJerk-XYZ
+fBodyGyro-XYZ
+fBodyAccMag
+fBodyAccJerkMag
+fBodyGyroMag
+fBodyGyroJerkMag
+
