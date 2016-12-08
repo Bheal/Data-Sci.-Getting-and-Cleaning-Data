@@ -1,5 +1,5 @@
-# DatascienceCoursera
-This is a README file for week 4 project of Getting and Cleaning Data Course in Data Science Specialization.
+## README
+## This is a README file for week 4 project of Getting and Cleaning Data Course in Data Science Specialization.
 
 We begin by downloading and unziping the data file.  These are the contents that are extracted from the zip file:
 - 'README.txt'
