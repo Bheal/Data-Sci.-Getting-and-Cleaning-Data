@@ -1,6 +1,12 @@
-## Codebook for week 4 Peer-graded assignment Project.
+## Codebook for prj341.txt file.
 
-#### These signals were used to estimate variables of the feature vector for each pattern:  
+The first to variables/columns are for 'subjectID' a 'activity'.  Based on these two columns, each row represents the subject who performed the activity, and the activity he performed.  There were 30 subjects(1-30) and 6 activities((WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING).  There are 180 rows (30 times 6) for each subject and each activity.
+
+The remaining columns record the averages of the value for the signals that were recored in orginal dataset.
+
+In columns 3:68 the averages of mean and standard deviation are recorded, they are estimated from the signals below. The names of these columns include: signal name-type of estimate(either mean or std)-direction.
+
+Data on these signals were collected and used to estimate several variables in the original dataset.  Only the mean and sd of signal for a given subject and activity are recorded here:  
 ('-XYZ' is used to denote 3-axial signals in the X, Y and Z directions).
 
       tBodyAcc-XYZ
