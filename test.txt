@@ -1,4 +1,0 @@
-
-
-## This is a test
-*curious is I can push to a newly forked repo (another users i.e. prof. leek)
