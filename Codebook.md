@@ -1,6 +1,9 @@
 ## Codebook for prj341.txt file.
 
-The first to variables/columns are for 'subjectID' a 'activity'.  Based on these two columns, each row represents the subject who performed the activity, and the activity he performed.  There were 30 subjects(1-30) and 6 activities((WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING).  There are 180 rows (30 times 6) for each subject and each activity.
+
+
+
+The first two variables/columns are for 'subjectID' and 'activity'.  Based on these two columns, each row represents the subject who performed the activity, and the activity he performed.  There were 30 subjects(1-30) and 6 activities((WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING).  There are 180 rows (30 times 6) for each subject and each activity.
 
 The remaining columns record the averages of the value for the signals that were recored in orginal dataset.
 
@@ -27,8 +30,16 @@ Data on these signals were collected and used to estimate several variables in t
       fBodyGyroMag
       fBodyGyroJerkMag
 
-#### The merged test and train data set, with mean and standard deviation of the observation signals is called 'top_bot' in the file run_analysis.R.  It had these variables:
- [1] "Subject Id"                          
+Columns 69:75 of the data set are vectors used on the angle() variable:
+
+      gravityMean
+      tBodyAccMean
+      tBodyAccJerkMean
+      tBodyGyroMean
+      tBodyGyroJerkMean
+
+#### This is a complete list of all the columns of the prj431_fin.txt file:
+  [1] "subjectId"                           
  [2] "activity"                            
  [3] "tBodyAcc-mean-X"                     
  [4] "tBodyAcc-mean-Y"                     
@@ -102,4 +113,4 @@ Data on these signals were collected and used to estimate several variables in t
 [72] "angle(tBodyGyroJerkMean,gravityMean)"
 [73] "angle(X,gravityMean)"                
 [74] "angle(Y,gravityMean)"                
-[75] "angle(Z,gravityMean)" 
+[75] "angle(Z,gravityMean)"  
